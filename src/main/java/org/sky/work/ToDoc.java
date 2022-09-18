@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ToDoc {
 
-    public void exportDoc() {
+    public void exportDoc() throws IOException {
     }
 
     public void test() throws IOException, InvalidFormatException {
@@ -23,6 +23,10 @@ public class ToDoc {
         XWPFDocument document = new XWPFDocument();
         FileOutputStream out = new FileOutputStream("D:\\程序\\outputPDF\\dist\\eg.docx");
 
+
+        /*
+          标题
+         */
         //添加标题
         XWPFParagraph titleParagraph = document.createParagraph();
         //设置段落居中
@@ -33,6 +37,10 @@ public class ToDoc {
         titleParagraphRun.setText("Java PoI");
         titleParagraphRun.setColor("000000");
         titleParagraphRun.setFontSize(20);
+
+        /*
+         * 段落
+         */
         //段落
         XWPFParagraph firstParagraph = document.createParagraph();
         XWPFRun run = firstParagraph.createRun();
@@ -50,6 +58,9 @@ public class ToDoc {
         XWPFRun paragraphRun1 = paragraph1.createRun();
         paragraphRun1.setText("\r");
 
+        /*
+         * 表格
+         */
         //基本信息表格
         XWPFTable infoTable = document.createTable();
         //去表格边框
@@ -85,10 +96,9 @@ public class ToDoc {
         infoTableRowFive.getCell(0).setText("现居地");
         infoTableRowFive.getCell(1).setText(": xx");
 
-
-        CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
-        XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
-
+        /*
+         * 图片
+         */
         XWPFParagraph pic = document.createParagraph();
         pic.setAlignment(ParagraphAlignment.CENTER);
         XWPFRun picRun = pic.createRun();
@@ -107,6 +117,13 @@ public class ToDoc {
                     Units.toEMU(300)
             );
         }
+
+        /*
+         * 页眉和页脚
+         */
+        CTSectPr sectPr = document.getDocument().getBody().addNewSectPr();
+        XWPFHeaderFooterPolicy policy = new XWPFHeaderFooterPolicy(document, sectPr);
+
         //添加页眉
         CTP ctpHeader = CTP.Factory.newInstance();
         CTR ctrHeader = ctpHeader.addNewR();
@@ -131,8 +148,11 @@ public class ToDoc {
         XWPFParagraph[] parsFooter = new XWPFParagraph[1];
         parsFooter[0] = footerParagraph;
         policy.createFooter(XWPFHeaderFooterPolicy.DEFAULT, parsFooter);
+
+
         document.write(out);
         out.close();
+
     }
 
 }
