@@ -16,6 +16,14 @@ import java.util.Objects;
 
 public class ToDoc {
 
+    /**
+     * 将数据转为DOC文档表格的主要方法
+     *
+     * @param tableData      表格内容数据
+     * @param tableHeaders   表格表头数据
+     * @param fileTitle      文档标题
+     * @param fileOutputPath 文件输出路径
+     */
     public static void exportDoc(ArrayList<Record> tableData, String[][] tableHeaders, String fileTitle, String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
@@ -138,7 +146,15 @@ public class ToDoc {
         return format;
     }
 
-    public static void mergeCellsVertically(XWPFTable table, int col, int fromRow, int toRow) {
+    /**
+     * 垂直方向合并单元格
+     *
+     * @param table   表格对象本身
+     * @param col     列数
+     * @param fromRow 开始行数
+     * @param toRow   结束行数
+     */
+    private static void mergeCellsVertically(XWPFTable table, int col, int fromRow, int toRow) {
         for (int rowIndex = fromRow; rowIndex <= toRow; rowIndex++) {
             XWPFTableCell cell = table.getRow(rowIndex).getCell(col);
             if (rowIndex == fromRow) {
@@ -149,12 +165,19 @@ public class ToDoc {
         }
     }
 
-    public static void mergeCellsHorizontal(XWPFTable table, int row, int fromCell, int toCell) {
+    /**
+     * 水平方向合并单元格
+     *
+     * @param table    表格对象本身
+     * @param row      行数
+     * @param fromCell 开始列数
+     * @param toCell   结束列数
+     */
+    private static void mergeCellsHorizontal(XWPFTable table, int row, int fromCell, int toCell) {
         for (int cellIndex = fromCell; cellIndex <= toCell; cellIndex++) {
             XWPFTableCell cell = table.getRow(row).getCell(cellIndex);
             if (cellIndex == fromCell) {
                 cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.RESTART);
-
             } else {
                 cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
             }
