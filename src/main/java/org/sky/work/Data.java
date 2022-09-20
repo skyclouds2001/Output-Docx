@@ -25,8 +25,8 @@ class Record {
 public class Data {
     public static ArrayList<Record> records;
     public static String[][] headers = {
-            {"专业", "序号", "检查表中检查内容", "问题描述", "问题照片", "整改意见", "问题归属", null},
-            {null, null, null, null, null, null, "文件、资料类", "现场类"},
+            {"专业", "序号", "检查表中检查内容", "问题描述", "问题照片", "整改意见", "问题归属", "0"},
+            {"1", "1", "1", "1", "1", "1", "文件、资料类", "现场类"},
     };
 
     static {

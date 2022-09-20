@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 public class ToDoc {
 
@@ -52,23 +53,21 @@ public class ToDoc {
             for (int i = 0; i < 2; ++i) {
                 row = table.getRow(i);
                 for (int j = 0; j < 8; ++j) {
-                    cell = row.getCell(j);
-                    cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-                    paragraph = cell.getParagraphArray(0);
-                    paragraph.setAlignment(ParagraphAlignment.CENTER);
-                    run = paragraph.createRun();
-                    run.setBold(true);
-                    run.setText(tableHeaders[i][j]);
+                    if (Objects.equals(tableHeaders[i][j], "0")) {
+                        mergeCellsHorizontal(table, i, j - 1, j);
+                    } else if (Objects.equals(tableHeaders[i][j], "1")) {
+                        mergeCellsVertically(table, j, i - 1, i);
+                    } else {
+                        cell = row.getCell(j);
+                        cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                        paragraph = cell.getParagraphArray(0);
+                        paragraph.setAlignment(ParagraphAlignment.CENTER);
+                        run = paragraph.createRun();
+                        run.setBold(true);
+                        run.setText(tableHeaders[i][j]);
+                    }
                 }
             }
-
-            mergeCellsHorizontal(table, 0, 6, 7);
-            mergeCellsVertically(table, 0, 0, 1);
-            mergeCellsVertically(table, 1, 0, 1);
-            mergeCellsVertically(table, 2, 0, 1);
-            mergeCellsVertically(table, 3, 0, 1);
-            mergeCellsVertically(table, 4, 0, 1);
-            mergeCellsVertically(table, 5, 0, 1);
 
         }
 
@@ -95,7 +94,7 @@ public class ToDoc {
                     e.printStackTrace();
                 }
             } else {
-                row.getCell(4).setText(data.imgURL);
+                row.getCell(4).setText("/");
             }
             row.getCell(5).setText(data.advice);
             if (data.qType == 1) {
