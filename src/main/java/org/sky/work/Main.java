@@ -5,7 +5,7 @@ public class Main {
         final ToDoc to = new ToDoc();
 
         try {
-            to.test();
+            to.exportDoc();
         } catch (Exception e) {
             e.printStackTrace();
         }
