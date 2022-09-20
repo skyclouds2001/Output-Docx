@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ToDoc {
 
-    public static void exportDoc(ArrayList<Record> tableData, String[][] headers, String fileTitle, String fileOutputPath) throws IOException {
+    public static void exportDoc(ArrayList<Record> tableData, String[][] tableHeaders, String fileTitle, String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
         FileOutputStream out = new FileOutputStream(fileOutputPath);
@@ -58,7 +58,7 @@ public class ToDoc {
                     paragraph.setAlignment(ParagraphAlignment.CENTER);
                     run = paragraph.createRun();
                     run.setBold(true);
-                    run.setText(headers[i][j]);
+                    run.setText(tableHeaders[i][j]);
                 }
             }
         }
@@ -75,9 +75,10 @@ public class ToDoc {
                 XWPFParagraph p = row.getCell(4).getParagraphArray(0);
                 XWPFRun run = p.createRun();
                 try {
+                    int type = getPictureFormat(data.imgURL);
                     run.addPicture(
                             new FileInputStream(data.imgURL),
-                            XWPFDocument.PICTURE_TYPE_PNG,
+                            type,
                             "",
                             Units.toEMU(50),
                             Units.toEMU(50)
@@ -99,6 +100,25 @@ public class ToDoc {
         document.write(out);
         out.close();
 
+    }
+
+    private static int getPictureFormat(String imgFile) throws Exception {
+        int format;
+        if (imgFile.endsWith(".emf")) format = XWPFDocument.PICTURE_TYPE_EMF;
+        else if (imgFile.endsWith(".wmf")) format = XWPFDocument.PICTURE_TYPE_WMF;
+        else if (imgFile.endsWith(".pict")) format = XWPFDocument.PICTURE_TYPE_PICT;
+        else if (imgFile.endsWith(".jpeg") || imgFile.endsWith(".jpg")) format = XWPFDocument.PICTURE_TYPE_JPEG;
+        else if (imgFile.endsWith(".png")) format = XWPFDocument.PICTURE_TYPE_PNG;
+        else if (imgFile.endsWith(".dib")) format = XWPFDocument.PICTURE_TYPE_DIB;
+        else if (imgFile.endsWith(".gif")) format = XWPFDocument.PICTURE_TYPE_GIF;
+        else if (imgFile.endsWith(".tiff")) format = XWPFDocument.PICTURE_TYPE_TIFF;
+        else if (imgFile.endsWith(".eps")) format = XWPFDocument.PICTURE_TYPE_EPS;
+        else if (imgFile.endsWith(".bmp")) format = XWPFDocument.PICTURE_TYPE_BMP;
+        else if (imgFile.endsWith(".wpg")) format = XWPFDocument.PICTURE_TYPE_WPG;
+        else {
+            throw new Exception("不支持的图片格式: " + imgFile + ". 仅支持 emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg 格式的图片");
+        }
+        return format;
     }
 
     @SuppressWarnings("unused")
