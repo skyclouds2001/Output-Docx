@@ -90,7 +90,7 @@ public class ToDoc {
                             new FileInputStream(data.imgURL),
                             getPictureFormat(data.imgURL),
                             "",
-                            Units.toEMU(50),
+                            Units.toEMU(75),
                             Units.toEMU(50)
                     );
                 } catch (Exception e) {
@@ -108,6 +108,7 @@ public class ToDoc {
         }
 
         document.write(out);
+        out.flush();
         out.close();
 
     }
