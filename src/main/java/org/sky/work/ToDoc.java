@@ -15,7 +15,7 @@ import java.util.List;
 
 public class ToDoc {
 
-    public static void exportDoc(ArrayList<Record> datas, String fileTitle, String fileOutputPath) throws IOException {
+    public static void exportDoc(ArrayList<Record> tableData, String[][] headers, String fileTitle, String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
         FileOutputStream out = new FileOutputStream(fileOutputPath);
@@ -35,35 +35,37 @@ public class ToDoc {
         // 初始化表格
         {
             XWPFTableRow row;
-//            XWPFTableCell cell;
+            XWPFTableCell cell;
+            XWPFParagraph paragraph;
+            XWPFRun run;
 
             row = table.getRow(0);
             for (int i = 0; i < 8 - 1; ++i) {
                 row.addNewTableCell();
             }
-            for (int i = 0; i < datas.size() - 1; ++i) {
+            for (int i = 0; i < tableData.size() - 1; ++i) {
                 table.createRow();
             }
             table.createRow();
             table.createRow();
 
-            row = table.getRow(0);
-            row.getCell(0).setText("专业");
-            row.getCell(1).setText("序号");
-            row.getCell(2).setText("检查表中检查内容");
-            row.getCell(3).setText("问题描述");
-            row.getCell(4).setText("问题照片");
-            row.getCell(5).setText("整改意见");
-            row.getCell(6).setText("问题归属");
-            row = table.getRow(1);
-            row.getCell(6).setText("文件、资料类");
-            row.getCell(7).setText("现场类");
+            for (int i = 0; i < 2; ++i) {
+                row = table.getRow(i);
+                for (int j = 0; j < 8; ++j) {
+                    cell = row.getCell(j);
+                    paragraph = cell.getParagraphArray(0);
+                    paragraph.setAlignment(ParagraphAlignment.CENTER);
+                    run = paragraph.createRun();
+                    run.setBold(true);
+                    run.setText(headers[i][j]);
+                }
+            }
         }
 
         // 插入数据
-        for (int i = 0; i < datas.size(); ++i) {
+        for (int i = 0; i < tableData.size(); ++i) {
             XWPFTableRow row = table.getRow(i + 2);
-            Record data = datas.get(i);
+            Record data = tableData.get(i);
             row.getCell(0).setText(data.type);
             row.getCell(1).setText(String.valueOf(data.index));
             row.getCell(2).setText(data.content);
