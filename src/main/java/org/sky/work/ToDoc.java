@@ -53,6 +53,7 @@ public class ToDoc {
                 row = table.getRow(i);
                 for (int j = 0; j < 8; ++j) {
                     cell = row.getCell(j);
+                    cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
                     paragraph = cell.getParagraphArray(0);
                     paragraph.setAlignment(ParagraphAlignment.CENTER);
                     run = paragraph.createRun();
@@ -70,7 +71,23 @@ public class ToDoc {
             row.getCell(1).setText(String.valueOf(data.index));
             row.getCell(2).setText(data.content);
             row.getCell(3).setText(data.desc);
-            row.getCell(4).setText(data.imgURL);
+            if (data.imgURL != null) {
+                XWPFParagraph p = row.getCell(4).getParagraphArray(0);
+                XWPFRun run = p.createRun();
+                try {
+                    run.addPicture(
+                            new FileInputStream(data.imgURL),
+                            XWPFDocument.PICTURE_TYPE_PNG,
+                            "",
+                            Units.toEMU(50),
+                            Units.toEMU(50)
+                    );
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                row.getCell(4).setText(data.imgURL);
+            }
             row.getCell(5).setText(data.advice);
             if (data.qType == 1) {
                 row.getCell(6).setText("√");
