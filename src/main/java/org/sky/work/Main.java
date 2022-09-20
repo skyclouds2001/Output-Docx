@@ -2,10 +2,8 @@ package org.sky.work;
 
 public class Main {
     public static void main(String[] args) {
-        final ToDoc to = new ToDoc();
-
         try {
-            to.exportDoc();
+            ToDoc.exportDoc(Data.records, "检查问题汇总清单", "D:\\程序\\outputPDF\\dist\\eg.docx");
         } catch (Exception e) {
             e.printStackTrace();
         }
