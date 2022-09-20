@@ -12,11 +12,11 @@ const compareVersion = function (first, second) {
   let index = 0
   for (let i = 0; i < Math.max(f.length, s.length); ++i) {
     if (s[i] === undefined || f[i] > s[i]) {
-      index = -1
+      index = 1
       break
     }
     if (f[i] === undefined || f[i] < s[i]) {
-      index = 1
+      index = -1
       break
     }
   }
