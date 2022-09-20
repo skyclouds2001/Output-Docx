@@ -31,7 +31,7 @@ public class Data {
 
     static {
         records = new ArrayList<>();
-        records.add(new Record("总图设计", 1, "企业", "神木", "/", "完善", 1));
-        records.add(new Record("总图设计", 2, "企业", "神木", "/", "完善", 2));
+        records.add(new Record("总图设计", 1, "企业", "神木", null, "完善", 1));
+        records.add(new Record("总图设计", 2, "企业", "神木", "D:\\程序\\outputPDF\\dist\\repository-open-graph-template.png", "完善", 2));
     }
 }
