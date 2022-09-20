@@ -76,6 +76,9 @@ public class ToDoc {
             XWPFTableRow row = table.getRow(i + 2);
             Record data = tableData.get(i);
             row.getCell(0).setText(data.type);
+            if (i > 0 && Objects.equals(tableData.get(i - 1).type, tableData.get(i).type)) {
+                mergeCellsVertically(table, 0, i + 1, i + 2);
+            }
             row.getCell(1).setText(String.valueOf(data.index));
             row.getCell(2).setText(data.content);
             row.getCell(3).setText(data.desc);
