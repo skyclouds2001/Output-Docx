@@ -61,6 +61,15 @@ public class ToDoc {
                     run.setText(tableHeaders[i][j]);
                 }
             }
+
+            mergeCellsHorizontal(table, 0, 6, 7);
+            mergeCellsVertically(table, 0, 0, 1);
+            mergeCellsVertically(table, 1, 0, 1);
+            mergeCellsVertically(table, 2, 0, 1);
+            mergeCellsVertically(table, 3, 0, 1);
+            mergeCellsVertically(table, 4, 0, 1);
+            mergeCellsVertically(table, 5, 0, 1);
+
         }
 
         // 插入数据
@@ -75,10 +84,9 @@ public class ToDoc {
                 XWPFParagraph p = row.getCell(4).getParagraphArray(0);
                 XWPFRun run = p.createRun();
                 try {
-                    int type = getPictureFormat(data.imgURL);
                     run.addPicture(
                             new FileInputStream(data.imgURL),
-                            type,
+                            getPictureFormat(data.imgURL),
                             "",
                             Units.toEMU(50),
                             Units.toEMU(50)
@@ -102,6 +110,12 @@ public class ToDoc {
 
     }
 
+    /**
+     * 判断图片文件的XWPFDocument中的类型
+     *
+     * @param imgFile 图片文件名|图片文件路径
+     * @return 判断类型
+     */
     private static int getPictureFormat(String imgFile) throws Exception {
         int format;
         if (imgFile.endsWith(".emf")) format = XWPFDocument.PICTURE_TYPE_EMF;
@@ -119,6 +133,29 @@ public class ToDoc {
             throw new Exception("不支持的图片格式: " + imgFile + ". 仅支持 emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg 格式的图片");
         }
         return format;
+    }
+
+    public static void mergeCellsVertically(XWPFTable table, int col, int fromRow, int toRow) {
+        for (int rowIndex = fromRow; rowIndex <= toRow; rowIndex++) {
+            XWPFTableCell cell = table.getRow(rowIndex).getCell(col);
+            if (rowIndex == fromRow) {
+                cell.getCTTc().addNewTcPr().addNewVMerge().setVal(STMerge.RESTART);
+            } else {
+                cell.getCTTc().addNewTcPr().addNewVMerge().setVal(STMerge.CONTINUE);
+            }
+        }
+    }
+
+    public static void mergeCellsHorizontal(XWPFTable table, int row, int fromCell, int toCell) {
+        for (int cellIndex = fromCell; cellIndex <= toCell; cellIndex++) {
+            XWPFTableCell cell = table.getRow(row).getCell(cellIndex);
+            if (cellIndex == fromCell) {
+                cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.RESTART);
+
+            } else {
+                cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
+            }
+        }
     }
 
     @SuppressWarnings("unused")
