@@ -28,7 +28,7 @@ public class ToDoc {
      * @param fileTitle      文档标题
      * @param fileOutputPath 文件输出路径
      */
-    public static @NotNull String exportDoc(@NotNull String fileTitle, @NotNull String @NotNull [] experts, @NotNull String[][] tableHeaders, @NotNull ArrayList<Record> tableData, @NotNull String fileOutputPath) throws IOException {
+    public static @NotNull String exportDoc(@NotNull String fileTitle, @NotNull String @NotNull [] experts, @NotNull String[][] tableHeaders, @NotNull Record[] tableData, @NotNull String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
         String filePath = System.getProperty("user.dir") + fileOutputPath + createFileName() + ".docx";
@@ -70,7 +70,7 @@ public class ToDoc {
             for (int i = 0; i < 8 - 1; ++i) {
                 row.addNewTableCell();
             }
-            for (int i = 0; i < tableData.size() - 1; ++i) {
+            for (int i = 0; i < tableData.length - 1; ++i) {
                 table.createRow();
             }
             table.createRow();
@@ -98,13 +98,13 @@ public class ToDoc {
         }
 
         // 插入数据
-        for (int i = 0; i < tableData.size(); ++i) {
+        for (int i = 0; i < tableData.length; ++i) {
             XWPFTableRow row = table.getRow(i + 2);
-            Record data = tableData.get(i);
+            Record data = tableData[i];
             row.getCell(0).setText(data.type);
-            if (i == 0 || !Objects.equals(tableData.get(i - 1).type, tableData.get(i).type)) {
+            if (i == 0 || !Objects.equals(tableData[i - 1].type, tableData[i].type)) {
                 int pos = i;
-                while (pos + 1 < tableData.size() && Objects.equals(tableData.get(pos).type, tableData.get(pos + 1).type))
+                while (pos + 1 < tableData.length && Objects.equals(tableData[pos].type, tableData[pos + 1].type))
                     ++pos;
                 mergeCellsVertically(table, 0, i + 2, pos + 2);
             }
