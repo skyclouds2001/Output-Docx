@@ -4,6 +4,7 @@ import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.model.XWPFHeaderFooterPolicy;
 import org.apache.poi.xwpf.usermodel.*;
+import org.jetbrains.annotations.NotNull;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.*;
 
 import java.io.FileInputStream;
@@ -23,7 +24,7 @@ public class ToDoc {
      * @param fileTitle      文档标题
      * @param fileOutputPath 文件输出路径
      */
-    public static String exportDoc(String fileTitle, String[] experts, String[][] tableHeaders, ArrayList<Record> tableData, String fileOutputPath) throws IOException {
+    public static @NotNull String exportDoc(@NotNull String fileTitle, @NotNull String @NotNull [] experts, @NotNull String[][] tableHeaders, @NotNull ArrayList<Record> tableData, @NotNull String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
         String filePath = System.getProperty("user.dir") + fileOutputPath + createFileName() + ".docx";
@@ -143,18 +144,17 @@ public class ToDoc {
      *
      * @return 随机产生的文件名
      */
-    private static String createFileName() {
+    private static @NotNull String createFileName() {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(900) + 100);
     }
 
     /**
      * 判断图片文件的XWPFDocument中的类型
-     * l
      *
      * @param imgFile 图片文件名|图片文件路径
      * @return 判断类型
      */
-    private static int getPictureFormat(String imgFile) throws Exception {
+    private static int getPictureFormat(@NotNull String imgFile) throws Exception {
         int format;
         if (imgFile.endsWith(".emf")) format = XWPFDocument.PICTURE_TYPE_EMF;
         else if (imgFile.endsWith(".wmf")) format = XWPFDocument.PICTURE_TYPE_WMF;
@@ -181,7 +181,7 @@ public class ToDoc {
      * @param fromRow 开始行数
      * @param toRow   结束行数
      */
-    private static void mergeCellsVertically(XWPFTable table, int col, int fromRow, int toRow) {
+    private static void mergeCellsVertically(@NotNull XWPFTable table, int col, int fromRow, int toRow) {
         for (int rowIndex = fromRow; rowIndex <= toRow; rowIndex++) {
             XWPFTableCell cell = table.getRow(rowIndex).getCell(col);
             if (rowIndex == fromRow) {
@@ -200,7 +200,7 @@ public class ToDoc {
      * @param fromCell 开始列数
      * @param toCell   结束列数
      */
-    private static void mergeCellsHorizontal(XWPFTable table, int row, int fromCell, int toCell) {
+    private static void mergeCellsHorizontal(@NotNull XWPFTable table, int row, int fromCell, int toCell) {
         for (int cellIndex = fromCell; cellIndex <= toCell; cellIndex++) {
             XWPFTableCell cell = table.getRow(row).getCell(cellIndex);
             if (cellIndex == fromCell) {
@@ -211,6 +211,9 @@ public class ToDoc {
         }
     }
 
+    /**
+     * 演示方法
+     */
     @SuppressWarnings("unused")
     public void test() throws IOException, InvalidFormatException {
 
