@@ -138,6 +138,11 @@ public class ToDoc {
 
     }
 
+    /**
+     * 产生随机的文件名 - 随机数 + 时间戳
+     *
+     * @return 随机产生的文件名
+     */
     private static String createFileName() {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(900) + 100);
     }
