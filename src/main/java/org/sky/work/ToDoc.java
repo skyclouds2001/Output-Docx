@@ -23,7 +23,7 @@ public class ToDoc {
      * @param fileTitle      文档标题
      * @param fileOutputPath 文件输出路径
      */
-    public static void exportDoc(ArrayList<Record> tableData, String[][] tableHeaders, String fileTitle, String fileOutputPath) throws IOException {
+    public static void exportDoc(String fileTitle, String[] experts, String[][] tableHeaders, ArrayList<Record> tableData, String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
         FileOutputStream out = new FileOutputStream(System.getProperty("user.dir") + fileOutputPath + createFileName() + ".docx");
@@ -36,6 +36,19 @@ public class ToDoc {
         titleRun.setColor("000000");
         titleRun.setFontSize(20);
         titleRun.setBold(true);
+
+        // 添加空行
+        document.createParagraph();
+
+        // 添加标注
+        StringBuilder ss = new StringBuilder("专家组成员：");
+        for (String s : experts) {
+            ss.append(s);
+        }
+        XWPFParagraph expert = document.createParagraph();
+        XWPFRun expertsRun = expert.createRun();
+        expertsRun.setText(ss.toString());
+        expertsRun.setBold(true);
 
         // 创建表格
         XWPFTable table = document.createTable();

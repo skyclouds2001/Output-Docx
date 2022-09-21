@@ -29,6 +29,10 @@ public class Data {
             {"1", "1", "1", "1", "1", "1", "文件、资料类", "现场类"},
     };
 
+    public static String[] experts = {
+            "专家A", "专家B"
+    };
+
     static {
         records = new ArrayList<>();
         records.add(new Record("总图设计", 1, "企业", "神木", null, "完善", 1));
