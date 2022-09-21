@@ -10,9 +10,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class ToDoc {
 
@@ -27,7 +26,7 @@ public class ToDoc {
     public static void exportDoc(ArrayList<Record> tableData, String[][] tableHeaders, String fileTitle, String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
-        FileOutputStream out = new FileOutputStream(fileOutputPath);
+        FileOutputStream out = new FileOutputStream(System.getProperty("user.dir") + fileOutputPath + createFileName() + ".docx");
 
         // 创建标题
         XWPFParagraph title = document.createParagraph();
@@ -121,8 +120,13 @@ public class ToDoc {
 
     }
 
+    private static String createFileName() {
+        return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(900) + 100);
+    }
+
     /**
      * 判断图片文件的XWPFDocument中的类型
+     * l
      *
      * @param imgFile 图片文件名|图片文件路径
      * @return 判断类型
