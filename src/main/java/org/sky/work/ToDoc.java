@@ -104,18 +104,20 @@ public class ToDoc {
             row.getCell(2).setText(data.content);
             row.getCell(3).setText(data.desc);
             if (data.imgURL != null) {
-                XWPFParagraph p = row.getCell(4).getParagraphArray(0);
-                XWPFRun run = p.createRun();
-                try {
-                    run.addPicture(
-                            new FileInputStream(data.imgURL),
-                            getPictureFormat(data.imgURL),
-                            "",
-                            Units.toEMU(75),
-                            Units.toEMU(50)
-                    );
-                } catch (Exception e) {
-                    e.printStackTrace();
+                for (String s : data.imgURL) {
+                    XWPFParagraph p = row.getCell(4).getParagraphArray(0);
+                    XWPFRun run = p.createRun();
+                    try {
+                        run.addPicture(
+                                new FileInputStream(s),
+                                getPictureFormat(s),
+                                "",
+                                Units.toEMU(75),
+                                Units.toEMU(50)
+                        );
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             } else {
                 row.getCell(4).setText("/");
