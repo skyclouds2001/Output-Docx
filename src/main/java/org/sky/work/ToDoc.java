@@ -23,10 +23,11 @@ public class ToDoc {
      * @param fileTitle      文档标题
      * @param fileOutputPath 文件输出路径
      */
-    public static void exportDoc(String fileTitle, String[] experts, String[][] tableHeaders, ArrayList<Record> tableData, String fileOutputPath) throws IOException {
+    public static String exportDoc(String fileTitle, String[] experts, String[][] tableHeaders, ArrayList<Record> tableData, String fileOutputPath) throws IOException {
 
         XWPFDocument document = new XWPFDocument();
-        FileOutputStream out = new FileOutputStream(System.getProperty("user.dir") + fileOutputPath + createFileName() + ".docx");
+        String filePath = System.getProperty("user.dir") + fileOutputPath + createFileName() + ".docx";
+        FileOutputStream out = new FileOutputStream(filePath);
 
         // 创建标题
         XWPFParagraph title = document.createParagraph();
@@ -130,6 +131,8 @@ public class ToDoc {
         document.write(out);
         out.flush();
         out.close();
+
+        return filePath;
 
     }
 
