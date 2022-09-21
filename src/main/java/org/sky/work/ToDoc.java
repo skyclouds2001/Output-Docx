@@ -16,6 +16,10 @@ import java.util.*;
 
 public class ToDoc {
 
+    private ToDoc() {
+        throw new RuntimeException("Unable to create this class!");
+    }
+
     /**
      * 将数据转为DOC文档表格的主要方法
      *
