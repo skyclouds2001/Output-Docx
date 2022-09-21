@@ -98,8 +98,11 @@ public class ToDoc {
             XWPFTableRow row = table.getRow(i + 2);
             Record data = tableData.get(i);
             row.getCell(0).setText(data.type);
-            if (i > 0 && Objects.equals(tableData.get(i - 1).type, tableData.get(i).type)) {
-                mergeCellsVertically(table, 0, i + 1, i + 2);
+            if (i == 0 || !Objects.equals(tableData.get(i - 1).type, tableData.get(i).type)) {
+                int pos = i;
+                while (pos + 1 < tableData.size() && Objects.equals(tableData.get(pos).type, tableData.get(pos + 1).type))
+                    ++pos;
+                mergeCellsVertically(table, 0, i + 2, pos + 2);
             }
             row.getCell(1).setText(String.valueOf(data.index));
             row.getCell(2).setText(data.content);
