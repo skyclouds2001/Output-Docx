@@ -17,7 +17,7 @@ public class ReadJSON {
 
     static void run() {
         try {
-            readJSONfile();
+            exportDoc();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -28,7 +28,7 @@ public class ReadJSON {
             {"1", "1", "1", "1", "1", "1", "文件、资料类", "现场类"},
     };
 
-    static void readJSONfile() throws IOException {
+    static void exportDoc() throws IOException {
         String dataPath = System.getProperty("user.dir") + "/dist/data.json";
         Reader reader = new InputStreamReader(new FileInputStream(dataPath), StandardCharsets.UTF_8);
         int ch;
@@ -61,6 +61,7 @@ public class ReadJSON {
 
                 JSONArray inspectionList = item.getJSONArray("checkup_item_inspection_point_content_list");
 
+                // 多个评估方式，在表格内应呈现为多行
                 for (int k = 0; k < inspectionList.size(); ++k) {
                     JSONObject inspection = inspectionList.getJSONObject(k);
 
@@ -77,6 +78,7 @@ public class ReadJSON {
 
                     JSONArray evaluationList = inspection.getJSONArray("expert_evaluation_list");
 
+                    // 如果列表中评估项数量大于1，则把所有评估项的所有问题描述/整改建议/问题照片 放在同一个单元格内，以换行符分开
                     for (int l = 0; l < evaluationList.size(); ++l) {
                         JSONObject evaluation = evaluationList.getJSONObject(l);
 
@@ -100,4 +102,5 @@ public class ReadJSON {
             }
         }
     }
+
 }
