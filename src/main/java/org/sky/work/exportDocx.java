@@ -23,7 +23,7 @@ public class exportDocx {
         throw new RuntimeException("Unable to create this class!");
     }
 
-    static void run() {
+    static void init() {
         try {
             String path = exportDoc("/dist/data.json");
             System.out.println(path);
