@@ -8,9 +8,12 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.jetbrains.annotations.NotNull;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 
+import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -89,6 +92,26 @@ public class exportDocx {
         else if (imgFile.endsWith(".eps")) format = XWPFDocument.PICTURE_TYPE_EPS;
         else if (imgFile.endsWith(".bmp")) format = XWPFDocument.PICTURE_TYPE_BMP;
         else if (imgFile.endsWith(".wpg")) format = XWPFDocument.PICTURE_TYPE_WPG;
+        else {
+            throw new Exception("不支持的图片格式: " + imgFile + ". 仅支持 emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg 格式的图片");
+        }
+        return format;
+    }
+
+    private String getImageType(@NotNull String imgFile) throws Exception {
+        String format;
+        if (imgFile.endsWith(".emf")) format = "emf";
+        else if (imgFile.endsWith(".wmf")) format = "wmf";
+        else if (imgFile.endsWith(".pict")) format = "pict";
+        else if (imgFile.endsWith(".jpg")) format = "jpg";
+        else if (imgFile.endsWith(".jpeg")) format = "jpeg";
+        else if (imgFile.endsWith(".png")) format = "png";
+        else if (imgFile.endsWith(".dib")) format = "dib";
+        else if (imgFile.endsWith(".gif")) format = "gif";
+        else if (imgFile.endsWith(".tiff")) format = "tiff";
+        else if (imgFile.endsWith(".eps")) format = "eps";
+        else if (imgFile.endsWith(".bmp")) format = "bmp";
+        else if (imgFile.endsWith(".wpg")) format = "wpg";
         else {
             throw new Exception("不支持的图片格式: " + imgFile + ". 仅支持 emf|wmf|pict|jpeg|png|dib|gif|tiff|eps|bmp|wpg 格式的图片");
         }
@@ -211,7 +234,7 @@ public class exportDocx {
         for (int i = 0; i < allItemList.size(); ++i) {
             JSONObject subject = allItemList.getJSONObject(i);
 
-            // todo 专业
+            // ***** 专业
             String subjectTitle = subject.getString("checkup_subject_name");
 
             int index = 0;
@@ -224,7 +247,7 @@ public class exportDocx {
             for (int j = 0; j < itemList.size(); ++j) {
                 JSONObject item = itemList.getJSONObject(j);
 
-                // todo 检查表中的检查内容
+                // ***** 检查表中的检查内容
                 String content = item.getString("checkup_item_evaluation_content");
 
                 JSONArray inspectionList = item.getJSONArray("checkup_item_inspection_point_content_list");
@@ -246,7 +269,7 @@ public class exportDocx {
                     JSONObject inspectionType = inspection.getJSONObject("evaluation_method_type_info");
 
                     if (inspectionType != null) {
-                        // todo 问题归属  1-书面材料 2-现场询问 3-实地考察
+                        // ***** 问题归属  1-书面材料 2-现场询问 3-实地考察
                         int inspectionTypeId = inspectionType.getIntValue("evaluation_method_type_id");
 
                         // 设置问题归属
@@ -269,17 +292,17 @@ public class exportDocx {
                         @SuppressWarnings("unused")
                         String evaluationId = evaluation.getString("expert_evaluation_id");
 
-                        // todo 问题描述
+                        // ***** 问题描述
                         String evaluationDescription = evaluation.getString("checkup_evaluation_problem_description");
-                        // todo 整改建议
+                        // ***** 整改建议
                         String evaluationImproveSuggest = evaluation.getString("checkup_evaluation_improve_suggest");
 
-                        if (l != 0) {
-                            row.getCell(3).addParagraph().createRun().setText(evaluationDescription);
-                            row.getCell(5).addParagraph().createRun().setText(evaluationImproveSuggest);
-                        } else {
+                        if (l == 0) {
                             row.getCell(3).getParagraphArray(0).createRun().setText(evaluationDescription);
                             row.getCell(5).getParagraphArray(0).createRun().setText(evaluationImproveSuggest);
+                        } else {
+                            row.getCell(3).addParagraph().createRun().setText(evaluationDescription);
+                            row.getCell(5).addParagraph().createRun().setText(evaluationImproveSuggest);
                         }
 
                         JSONArray evaluationImageList = evaluation.getJSONArray("checkup_subject_item_evaluation_image_list");
@@ -291,9 +314,15 @@ public class exportDocx {
                             String evaluationImageURL = evaluationImage.getString("source");
 
                             try {
+                                URL url = new URL(evaluationImageURL);
+                                BufferedImage img = ImageIO.read(url);
+                                String type = getImageType(evaluationImageURL);
+                                String imgURL = System.getProperty("user.dir") + "\\dist\\" + createFileName() + "." + type;
+                                File image = new File(imgURL);
+                                ImageIO.write(img, type, image);
                                 if (l == 0 && m == 0) {
                                     row.getCell(4).getParagraphArray(0).createRun().addPicture(
-                                            new FileInputStream(evaluationImageURL),
+                                            new FileInputStream(imgURL),
                                             getPictureFormat(evaluationImageURL),
                                             createFileName(),
                                             Units.toEMU(75),
@@ -301,12 +330,16 @@ public class exportDocx {
                                     );
                                 } else {
                                     row.getCell(4).addParagraph().createRun().addPicture(
-                                            new FileInputStream(evaluationImageURL),
+                                            new FileInputStream(imgURL),
                                             getPictureFormat(evaluationImageURL),
-                                            "",
+                                            createFileName(),
                                             Units.toEMU(75),
                                             Units.toEMU(50)
                                     );
+                                }
+                                {
+                                    File f = new File(imgURL);
+                                    System.out.println(f.delete());
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
