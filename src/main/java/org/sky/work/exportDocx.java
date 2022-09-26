@@ -175,7 +175,7 @@ public class exportDocx {
 
         // 初始化文档
         XWPFDocument document = new XWPFDocument();
-        String filePath = System.getProperty("user.dir") + "/dist/" + createFileName() + ".docx";
+        String filePath = System.getProperty("user.dir") + "\\dist\\" + createFileName() + ".docx";
         FileOutputStream out = new FileOutputStream(filePath);
 
         // 创建标题
