@@ -17,8 +17,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-public class ReadJSON {
-    private ReadJSON() {
+public class exportDocx {
+    private exportDocx() {
         throw new RuntimeException("Unable to create this class!");
     }
 
@@ -304,7 +304,7 @@ public class ReadJSON {
                     }
                 }
             }
-            
+
             table.getRow(base).getCell(0).setText(subjectTitle);
             mergeCellsVertically(table, 0, base, base + index - 1);
 
