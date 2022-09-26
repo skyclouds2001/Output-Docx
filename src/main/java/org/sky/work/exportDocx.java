@@ -24,7 +24,7 @@ public class exportDocx {
 
     static void run() {
         try {
-            String path = exportDoc();
+            String path = exportDoc("/dist/data.json");
             System.out.println(path);
         } catch (Exception e) {
             e.printStackTrace();
@@ -103,9 +103,12 @@ public class exportDocx {
         }
     }
 
-    static @NotNull String exportDoc() throws Exception {
+    /**
+     * 导出DOCX文档
+     */
+    static @NotNull String exportDoc(String path) throws Exception {
         // 初始化数据源
-        String dataPath = System.getProperty("user.dir") + "/dist/data.json";
+        String dataPath = System.getProperty("user.dir") + path;
         Reader reader = new InputStreamReader(new FileInputStream(dataPath), StandardCharsets.UTF_8);
         int ch;
         StringBuilder sb = new StringBuilder();
@@ -284,7 +287,7 @@ public class exportDocx {
                                     row.getCell(4).getParagraphArray(0).createRun().addPicture(
                                             new FileInputStream(evaluationImageURL),
                                             getPictureFormat(evaluationImageURL),
-                                            "",
+                                            createFileName(),
                                             Units.toEMU(75),
                                             Units.toEMU(50)
                                     );
