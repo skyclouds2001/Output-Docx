@@ -45,11 +45,23 @@ public class exportDocx {
                             pw.println();
 
                             try {
-                                String source = "/dist/data.json";
-                                String path = this.exportDoc(source);
+                                String[] requestLine = bd.readLine().split(" ");
+                                @SuppressWarnings("unused")
+                                String method = requestLine[0];
+                                @SuppressWarnings("unused")
+                                String path = requestLine[1];
+                                @SuppressWarnings("unused")
+                                String HTTP = requestLine[2];
 
-                                pw.println(path);
-                            } catch (Exception e) {
+                                if (Objects.equals(path, "/")) {
+                                    try {
+                                        String source = this.exportDoc("/dist/data.json");
+                                        pw.println(source);
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (IOException e) {
                                 e.printStackTrace();
                             }
 
