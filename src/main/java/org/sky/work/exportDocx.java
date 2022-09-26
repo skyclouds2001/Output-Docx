@@ -8,10 +8,9 @@ import org.apache.poi.xwpf.usermodel.*;
 import org.jetbrains.annotations.NotNull;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
+import java.io.*;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -20,14 +19,44 @@ import java.util.Random;
 
 public class exportDocx {
     private exportDocx() {
-        throw new RuntimeException("Unable to create this class!");
     }
 
     static void init() {
+        exportDocx server = new exportDocx();
         try {
-            String path = exportDoc("/dist/data.json");
+            String source = "/dist/data.json";
+            String path = server.exportDoc(source);
             System.out.println(path);
         } catch (Exception e) {
+            e.printStackTrace();
+        }
+//        server.listen();
+    }
+
+    private void listen() {
+        try {
+            ServerSocket serverSocket = new ServerSocket(8888);
+            while (true) {
+                Socket client = serverSocket.accept();
+
+                new Thread(() -> {
+                    try {
+                        BufferedReader bd = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                        PrintWriter pw = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
+
+                        pw.println("HTTP/1.1 200 OK");
+                        pw.println("Content-type: text/html");
+                        pw.println();
+                        pw.println("<h1>successful</h1>");
+
+                        pw.flush();
+                        pw.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }).start();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -37,7 +66,7 @@ public class exportDocx {
      *
      * @return 随机产生的文件名
      */
-    private static @NotNull String createFileName() {
+    private @NotNull String createFileName() {
         return new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()) + (new Random().nextInt(900) + 100);
     }
 
@@ -47,7 +76,7 @@ public class exportDocx {
      * @param imgFile 图片文件名|图片文件路径
      * @return 判断类型
      */
-    private static int getPictureFormat(@NotNull String imgFile) throws Exception {
+    private int getPictureFormat(@NotNull String imgFile) throws Exception {
         int format;
         if (imgFile.endsWith(".emf")) format = XWPFDocument.PICTURE_TYPE_EMF;
         else if (imgFile.endsWith(".wmf")) format = XWPFDocument.PICTURE_TYPE_WMF;
@@ -74,7 +103,7 @@ public class exportDocx {
      * @param fromRow 开始行数
      * @param toRow   结束行数
      */
-    private static void mergeCellsVertically(@NotNull XWPFTable table, int col, int fromRow, int toRow) {
+    private void mergeCellsVertically(@NotNull XWPFTable table, int col, int fromRow, int toRow) {
         for (int rowIndex = fromRow; rowIndex <= toRow; rowIndex++) {
             XWPFTableCell cell = table.getRow(rowIndex).getCell(col);
             if (rowIndex == fromRow) {
@@ -93,7 +122,7 @@ public class exportDocx {
      * @param fromCell 开始列数
      * @param toCell   结束列数
      */
-    private static void mergeCellsHorizontal(@NotNull XWPFTable table, int row, int fromCell, int toCell) {
+    private void mergeCellsHorizontal(@NotNull XWPFTable table, int row, int fromCell, int toCell) {
         for (int cellIndex = fromCell; cellIndex <= toCell; cellIndex++) {
             XWPFTableCell cell = table.getRow(row).getCell(cellIndex);
             if (cellIndex == fromCell) {
@@ -107,7 +136,7 @@ public class exportDocx {
     /**
      * 导出DOCX文档
      */
-    static @NotNull String exportDoc(String path) throws Exception {
+    private @NotNull String exportDoc(String path) throws Exception {
         // 初始化数据源
         String dataPath = System.getProperty("user.dir") + path;
         Reader reader = new InputStreamReader(new FileInputStream(dataPath), StandardCharsets.UTF_8);
