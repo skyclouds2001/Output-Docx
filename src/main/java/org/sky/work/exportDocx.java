@@ -26,38 +26,40 @@ public class exportDocx {
 
     static void init() {
         exportDocx server = new exportDocx();
-        try {
-            String source = "/dist/data.json";
-            String path = server.exportDoc(source);
-            System.out.println(path);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-//        server.listen();
+        server.listen();
     }
 
     private void listen() {
         try {
-            ServerSocket serverSocket = new ServerSocket(8888);
-            while (true) {
-                Socket client = serverSocket.accept();
+            try (ServerSocket serverSocket = new ServerSocket(8888)) {
+                while (true) {
+                    Socket client = serverSocket.accept();
 
-                new Thread(() -> {
-                    try {
-                        BufferedReader bd = new BufferedReader(new InputStreamReader(client.getInputStream()));
-                        PrintWriter pw = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
+                    new Thread(() -> {
+                        try {
+                            BufferedReader bd = new BufferedReader(new InputStreamReader(client.getInputStream()));
+                            PrintWriter pw = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
 
-                        pw.println("HTTP/1.1 200 OK");
-                        pw.println("Content-type: text/html");
-                        pw.println();
-                        pw.println("<h1>successful</h1>");
+                            pw.println("HTTP/1.1 200 OK");
+                            pw.println("Content-type: text/plain;charset=utf-8");
+                            pw.println();
 
-                        pw.flush();
-                        pw.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }).start();
+                            try {
+                                String source = "/dist/data.json";
+                                String path = this.exportDoc(source);
+
+                                pw.println(path);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+
+                            pw.flush();
+                            pw.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }).start();
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -98,7 +100,7 @@ public class exportDocx {
         return format;
     }
 
-    private String getImageType(@NotNull String imgFile) throws Exception {
+    private @NotNull String getImageType(@NotNull String imgFile) throws Exception {
         String format;
         if (imgFile.endsWith(".emf")) format = "emf";
         else if (imgFile.endsWith(".wmf")) format = "wmf";
@@ -336,10 +338,6 @@ public class exportDocx {
                                             Units.toEMU(75),
                                             Units.toEMU(50)
                                     );
-                                }
-                                {
-                                    File f = new File(imgURL);
-                                    System.out.println(f.delete());
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
