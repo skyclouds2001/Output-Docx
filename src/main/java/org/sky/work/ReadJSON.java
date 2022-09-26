@@ -3,11 +3,15 @@ package org.sky.work;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import org.apache.poi.util.Units;
 import org.apache.poi.xwpf.usermodel.*;
 import org.jetbrains.annotations.NotNull;
 import org.openxmlformats.schemas.wordprocessingml.x2006.main.STMerge;
 
-import java.io.*;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -99,7 +103,7 @@ public class ReadJSON {
         }
     }
 
-    static @NotNull String exportDoc() throws IOException {
+    static @NotNull String exportDoc() throws Exception {
         // 初始化数据源
         String dataPath = System.getProperty("user.dir") + "/dist/data.json";
         Reader reader = new InputStreamReader(new FileInputStream(dataPath), StandardCharsets.UTF_8);
@@ -188,6 +192,8 @@ public class ReadJSON {
         mergeCellsVertically(table, 4, 0, 1);
         mergeCellsVertically(table, 5, 0, 1);
 
+        int base = 2;
+
         // 读取数据
         JSONObject source = JSON.parseObject(jsonStr);
         JSONArray allItemList = source.getJSONArray("all_checkup_subject_item_list");
@@ -197,6 +203,9 @@ public class ReadJSON {
             // todo 专业
             String subjectTitle = subject.getString("checkup_subject_name");
 
+            int index = 0;
+
+            @SuppressWarnings("unused")
             String subjectId = subject.getString("checkup_subject_id");
 
             JSONArray itemList = subject.getJSONArray("checkup_item_list");
@@ -211,16 +220,32 @@ public class ReadJSON {
 
                 // 多个评估方式，在表格内应呈现为多行
                 for (int k = 0; k < inspectionList.size(); ++k) {
+                    // 创建表格行
+                    XWPFTableRow row = table.createRow();
+                    // 设置检查表中的检查内容
+                    row.getCell(2).setText(content);
+                    row.getCell(1).setText(String.valueOf(index + 1));
+                    ++index;
+
                     JSONObject inspection = inspectionList.getJSONObject(k);
 
+                    @SuppressWarnings("unused")
                     String inspectionId = inspection.getString("checkup_subject_item_evaluation_origin_id");
 
                     JSONObject inspectionType = inspection.getJSONObject("evaluation_method_type_info");
 
                     if (inspectionType != null) {
                         // todo 问题归属  1-书面材料 2-现场询问 3-实地考察
-                        String inspectionTypeId = inspectionType.getString("evaluation_method_type_id");
+                        int inspectionTypeId = inspectionType.getIntValue("evaluation_method_type_id");
 
+                        // 设置问题归属
+                        if (inspectionTypeId == 1) {
+                            row.getCell(6).setText("√");
+                        } else {
+                            row.getCell(7).setText("√");
+                        }
+
+                        @SuppressWarnings("unused")
                         String inspectionTypeName = inspectionType.getString("evaluation_method_type_name");
                     }
 
@@ -230,12 +255,21 @@ public class ReadJSON {
                     for (int l = 0; l < evaluationList.size(); ++l) {
                         JSONObject evaluation = evaluationList.getJSONObject(l);
 
+                        @SuppressWarnings("unused")
                         String evaluationId = evaluation.getString("expert_evaluation_id");
 
                         // todo 问题描述
-                        String evaluationDescription = evaluation.getString("");
+                        String evaluationDescription = evaluation.getString("checkup_evaluation_problem_description");
                         // todo 整改建议
                         String evaluationImproveSuggest = evaluation.getString("checkup_evaluation_improve_suggest");
+
+                        if (l != 0) {
+                            row.getCell(3).addParagraph().createRun().setText(evaluationDescription);
+                            row.getCell(5).addParagraph().createRun().setText(evaluationImproveSuggest);
+                        } else {
+                            row.getCell(3).getParagraphArray(0).createRun().setText(evaluationDescription);
+                            row.getCell(5).getParagraphArray(0).createRun().setText(evaluationImproveSuggest);
+                        }
 
                         JSONArray evaluationImageList = evaluation.getJSONArray("checkup_subject_item_evaluation_image_list");
 
@@ -244,10 +278,37 @@ public class ReadJSON {
 
                             // todo 问题照片
                             String evaluationImageURL = evaluationImage.getString("source");
+
+                            try {
+                                if (l == 0 && m == 0) {
+                                    row.getCell(4).getParagraphArray(0).createRun().addPicture(
+                                            new FileInputStream(evaluationImageURL),
+                                            getPictureFormat(evaluationImageURL),
+                                            "",
+                                            Units.toEMU(75),
+                                            Units.toEMU(50)
+                                    );
+                                } else {
+                                    row.getCell(4).addParagraph().createRun().addPicture(
+                                            new FileInputStream(evaluationImageURL),
+                                            getPictureFormat(evaluationImageURL),
+                                            "",
+                                            Units.toEMU(75),
+                                            Units.toEMU(50)
+                                    );
+                                }
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
             }
+            
+            table.getRow(base).getCell(0).setText(subjectTitle);
+            mergeCellsVertically(table, 0, base, base + index - 1);
+
+            base += index;
         }
 
         document.write(out);
