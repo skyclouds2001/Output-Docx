@@ -15,6 +15,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Objects;
 import java.util.Random;
 
 public class exportDocx {
@@ -139,61 +140,39 @@ public class exportDocx {
         XWPFTable table = document.createTable();
 
         // 初始化表头
-        XWPFTableRow row_0 = table.getRow(0);
-        XWPFTableCell cell_0_0 = row_0.getCell(0);
-        cell_0_0.setText("专业");
-        cell_0_0.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_0_0 = cell_0_0.getParagraphArray(0);
-        p_0_0.setAlignment(ParagraphAlignment.CENTER);
-        XWPFTableCell cell_0_1 = row_0.createCell();
-        cell_0_1.setText("序号");
-        cell_0_1.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_0_1 = cell_0_1.getParagraphArray(0);
-        p_0_1.setAlignment(ParagraphAlignment.CENTER);
-        XWPFTableCell cell_0_2 = row_0.createCell();
-        cell_0_2.setText("检查表中检查内容");
-        cell_0_2.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_0_2 = cell_0_2.getParagraphArray(0);
-        p_0_2.setAlignment(ParagraphAlignment.CENTER);
-        XWPFTableCell cell_0_3 = row_0.createCell();
-        cell_0_3.setText("问题描述");
-        cell_0_3.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_0_3 = cell_0_3.getParagraphArray(0);
-        p_0_3.setAlignment(ParagraphAlignment.CENTER);
-        XWPFTableCell cell_0_4 = row_0.createCell();
-        cell_0_4.setText("问题照片");
-        cell_0_4.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_0_4 = cell_0_4.getParagraphArray(0);
-        p_0_4.setAlignment(ParagraphAlignment.CENTER);
-        XWPFTableCell cell_0_5 = row_0.createCell();
-        cell_0_5.setText("整改建议");
-        cell_0_5.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_0_5 = cell_0_5.getParagraphArray(0);
-        p_0_5.setAlignment(ParagraphAlignment.CENTER);
-        XWPFTableCell cell_0_6 = row_0.createCell();
-        cell_0_6.setText("问题归属");
-        cell_0_6.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_0_6 = cell_0_6.getParagraphArray(0);
-        p_0_6.setAlignment(ParagraphAlignment.CENTER);
-        row_0.createCell();
-        mergeCellsHorizontal(table, 0, 6, 7);
-        XWPFTableRow row_1 = table.createRow();
-        XWPFTableCell cell_1_6 = row_1.getCell(6);
-        cell_1_6.setText("文件、 资料类");
-        cell_1_6.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_1_6 = cell_1_6.getParagraphArray(0);
-        p_1_6.setAlignment(ParagraphAlignment.CENTER);
-        XWPFTableCell cell_1_7 = row_1.getCell(7);
-        cell_1_7.setText("现场类");
-        cell_1_7.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
-        XWPFParagraph p_1_7 = cell_1_7.getParagraphArray(0);
-        p_1_7.setAlignment(ParagraphAlignment.CENTER);
-        mergeCellsVertically(table, 0, 0, 1);
-        mergeCellsVertically(table, 1, 0, 1);
-        mergeCellsVertically(table, 2, 0, 1);
-        mergeCellsVertically(table, 3, 0, 1);
-        mergeCellsVertically(table, 4, 0, 1);
-        mergeCellsVertically(table, 5, 0, 1);
+        {
+            String[][] headers = {
+                    {"专业", "序号", "检查表中检查内容", "问题描述", "问题照片", "整改意见", "问题归属", "0"},
+                    {"1", "1", "1", "1", "1", "1", "文件、资料类", "现场类"},
+            };
+
+            XWPFTableRow row_0 = table.getRow(0);
+            for (int i = 0; i < 8 - 1; ++i) {
+                row_0.addNewTableCell();
+            }
+            for (int i = 0; i < headers.length - 1; ++i) {
+                table.createRow();
+            }
+
+            for (int i = 0; i < 2; ++i) {
+                XWPFTableRow row = table.getRow(i);
+                for (int j = 0; j < 8; ++j) {
+                    if (Objects.equals(headers[i][j], "0")) {
+                        mergeCellsHorizontal(table, i, j - 1, j);
+                    } else if (Objects.equals(headers[i][j], "1")) {
+                        mergeCellsVertically(table, j, i - 1, i);
+                    } else {
+                        XWPFTableCell cell = row.getCell(j);
+                        cell.setVerticalAlignment(XWPFTableCell.XWPFVertAlign.CENTER);
+                        XWPFParagraph paragraph = cell.getParagraphArray(0);
+                        paragraph.setAlignment(ParagraphAlignment.CENTER);
+                        XWPFRun run = paragraph.createRun();
+                        run.setBold(true);
+                        run.setText(headers[i][j]);
+                    }
+                }
+            }
+        }
 
         int base = 2;
 
