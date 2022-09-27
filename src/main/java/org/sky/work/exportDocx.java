@@ -330,7 +330,7 @@ public class exportDocx {
                             JSONObject evaluationImage = evaluationImageList.getJSONObject(m);
 
                             // ***** 问题照片
-                            String evaluationImageURL = evaluationImage.getString("source");
+                            String evaluationImageURL = evaluationImage.getString("thumb");
 
                             try {
                                 String imgURL = System.getProperty("user.dir") + "\\dist\\" + getFileName(evaluationImageURL);
