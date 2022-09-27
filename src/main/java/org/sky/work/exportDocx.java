@@ -40,10 +40,6 @@ public class exportDocx {
                             BufferedReader bd = new BufferedReader(new InputStreamReader(client.getInputStream()));
                             PrintWriter pw = new PrintWriter(new OutputStreamWriter(client.getOutputStream()));
 
-                            pw.println("HTTP/1.1 200 OK");
-                            pw.println("Content-type: text/plain;charset=utf-8");
-                            pw.println();
-
                             try {
                                 String[] requestLine = bd.readLine().split(" ");
                                 @SuppressWarnings("unused")
@@ -54,15 +50,18 @@ public class exportDocx {
                                 String HTTP = requestLine[2];
 
                                 if (Objects.equals(path, "/")) {
-                                    try {
-                                        String source = this.exportDoc("/dist/data.json");
-                                        pw.println(source);
-                                    } catch (Exception e) {
-                                        e.printStackTrace();
-                                    }
+                                    String source = this.exportDoc("/dist/data.json");
+                                    pw.println("HTTP/1.1 200 OK");
+                                    pw.println("Content-type: text/plain;charset=utf-8");
+                                    pw.println();
+                                    pw.println(source);
                                 }
-                            } catch (IOException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
+                                pw.println("HTTP/1.1 500 Internal Server Error");
+                                pw.println("Content-type: text/plain;charset=utf-8");
+                                pw.println();
+                                pw.println("Fail");
                             }
 
                             pw.flush();
@@ -168,6 +167,12 @@ public class exportDocx {
                 cell.getCTTc().addNewTcPr().addNewHMerge().setVal(STMerge.CONTINUE);
             }
         }
+    }
+
+    private @NotNull String getFileName(@NotNull String path) {
+        String[] strings = path.split("/");
+        int length = strings.length;
+        return strings[length - 1];
     }
 
     /**
@@ -328,12 +333,14 @@ public class exportDocx {
                             String evaluationImageURL = evaluationImage.getString("source");
 
                             try {
-                                URL url = new URL(evaluationImageURL);
-                                BufferedImage img = ImageIO.read(url);
-                                String type = getImageType(evaluationImageURL);
-                                String imgURL = System.getProperty("user.dir") + "\\dist\\" + createFileName() + "." + type;
+                                String imgURL = System.getProperty("user.dir") + "\\dist\\" + getFileName(evaluationImageURL);
                                 File image = new File(imgURL);
-                                ImageIO.write(img, type, image);
+                                if (!image.exists()) {
+                                    URL url = new URL(evaluationImageURL);
+                                    BufferedImage img = ImageIO.read(url);
+                                    String type = getImageType(evaluationImageURL);
+                                    ImageIO.write(img, type, image);
+                                }
                                 if (l == 0 && m == 0) {
                                     row.getCell(4).getParagraphArray(0).createRun().addPicture(
                                             new FileInputStream(imgURL),
