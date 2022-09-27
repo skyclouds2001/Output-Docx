@@ -335,27 +335,32 @@ public class exportDocx {
                             try {
                                 String imgURL = System.getProperty("user.dir") + "\\dist\\" + getFileName(evaluationImageURL);
                                 File image = new File(imgURL);
+                                BufferedImage img;
                                 if (!image.exists()) {
                                     URL url = new URL(evaluationImageURL);
-                                    BufferedImage img = ImageIO.read(url);
+                                    img = ImageIO.read(url);
                                     String type = getImageType(evaluationImageURL);
                                     ImageIO.write(img, type, image);
+                                } else {
+                                    img = ImageIO.read(image);
                                 }
+                                int width = img.getWidth(), height = img.getHeight();
+                                int cWidth = 100, cHeight = 100 * height / width;
                                 if (l == 0 && m == 0) {
                                     row.getCell(4).getParagraphArray(0).createRun().addPicture(
                                             new FileInputStream(imgURL),
                                             getPictureFormat(evaluationImageURL),
                                             createFileName(),
-                                            Units.toEMU(75),
-                                            Units.toEMU(50)
+                                            Units.toEMU(cWidth),
+                                            Units.toEMU(cHeight)
                                     );
                                 } else {
                                     row.getCell(4).addParagraph().createRun().addPicture(
                                             new FileInputStream(imgURL),
                                             getPictureFormat(evaluationImageURL),
                                             createFileName(),
-                                            Units.toEMU(75),
-                                            Units.toEMU(50)
+                                            Units.toEMU(cWidth),
+                                            Units.toEMU(cHeight)
                                     );
                                 }
                             } catch (Exception e) {
