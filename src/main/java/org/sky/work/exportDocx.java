@@ -50,7 +50,7 @@ public class exportDocx {
                                 String HTTP = requestLine[2];
 
                                 if (Objects.equals(path, "/")) {
-                                    String source = this.exportDoc("/dist/data.json");
+                                    String source = this.exportDoc(Math.random() > 0.5 ? "/dist/data.json" : "/dist/data2.json");
                                     pw.println("HTTP/1.1 200 OK");
                                     pw.println("Content-type: text/plain;charset=utf-8");
                                     pw.println();
