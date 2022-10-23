@@ -371,7 +371,7 @@ public class exportDocx {
                 }
             }
 
-            table.getRow(base).getCell(0).setText(subjectTitle);
+            if (index != 0) table.getRow(base).getCell(0).setText(subjectTitle);
             mergeCellsVertically(table, 0, base, base + index - 1);
 
             base += index;
