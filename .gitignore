@@ -1,4 +1,5 @@
 target/
+docs/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -21,7 +22,7 @@ target/
 ### NetBeans ###
 /nbproject/private/
 /nbbuild/
-/dist/
+/docs/
 /nbdist/
 /.nb-gradle/
 build/
